@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  /* 温暖奶油色背景系 */
+  --color-cream-50: #FFFBF5;
+  --color-cream-100: #FFF5EA;
+  --color-cream-200: #FFECD8;
+  --color-cream-300: #FFDDC0;
+
+  /* 蜜桃色主强调色 */
+  --color-peach-100: #FFE5D4;
+  --color-peach-200: #FFCFB3;
+  --color-peach-300: #FFB088;
+  --color-peach-400: #F4956A;
+  --color-peach-500: #E87E52;
+
+  /* 柔和薰衣草紫（次要点缀色） */
+  --color-lilac-100: #F0E6F6;
+  --color-lilac-200: #DCC8EB;
+  --color-lilac-300: #C4A4D8;
+  --color-lilac-400: #A87FC4;
+
+  /* 柔和粉色（点缀） */
+  --color-rose-100: #FFF0F3;
+  --color-rose-200: #FECDD6;
+  --color-rose-300: #F9A8B8;
+
+  /* 文本色 - 温暖棕色系 */
+  --color-text-primary: #4A3728;
+  --color-text-secondary: #7A6552;
+  --color-text-muted: #A89585;
+
+  /* 字体 */
+  --font-serif: "Noto Serif SC", Georgia, serif;
+  --font-sans: "Nunito", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+}
+
+/* 全局样式 */
+html {
+  background-color: #FFF8F0;
+  color: #4A3728;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #FFDDC0;
+  border-radius: 2px;
+}
+
+/* 动画 */
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 内容左右滑入动画 */
+@keyframes slide-from-right {
+  from { opacity: 0.5; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-from-left {
+  from { opacity: 0.5; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-slow {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 柔和呼吸光效 - 周期放慢到 5s，阴影强度降低 */
+@keyframes glow-soft {
+  0%, 100% { box-shadow: 0 4px 16px rgba(244, 149, 106, 0.15); }
+  50% { box-shadow: 0 4px 24px rgba(244, 149, 106, 0.28); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* 缓慢漂移动画 - 用于装饰元素 */
+@keyframes drift {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-8px) translateX(4px); }
+  66% { transform: translateY(4px) translateX(-4px); }
+}
+
+@keyframes drift-reverse {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(6px) translateX(-5px); }
+  66% { transform: translateY(-4px) translateX(3px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 0.7; transform: scale(1); }
+}
+
+@utility animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@utility animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+@utility animate-slide-from-right {
+  animation: slide-from-right 0.28s ease-out forwards;
+}
+
+@utility animate-slide-from-left {
+  animation: slide-from-left 0.28s ease-out forwards;
+}
+
+@utility animate-fade-in-slow {
+  animation: fade-in-slow 1s ease-out forwards;
+}
+
+@utility animate-cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@utility animate-glow-soft {
+  animation: glow-soft 5s ease-in-out infinite;
+}
+
+@utility animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@utility animate-drift {
+  animation: drift 8s ease-in-out infinite;
+}
+
+@utility animate-drift-reverse {
+  animation: drift-reverse 10s ease-in-out infinite;
+}
+
+@utility animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
