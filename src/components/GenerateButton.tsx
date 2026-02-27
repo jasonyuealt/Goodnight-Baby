@@ -18,7 +18,7 @@ export function GenerateButton({ state, onGenerate }: Props) {
         disabled={isLoading}
         className={`
           w-full flex items-center justify-center gap-2.5
-          py-4 rounded-2xl text-base font-semibold
+          py-4 rounded-2xl text-base font-bold tracking-wide
           transition-all duration-300 ease-out cursor-pointer
           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-peach-400
           ${isLoading

@@ -71,8 +71,8 @@ function EmptyState() {
         />
       </div>
       <div className="text-center space-y-2">
-        <p className="text-text-primary font-serif text-lg">今晚，给宝宝读点什么？</p>
-        <p className="text-text-muted text-sm">点击下方按钮，开始今晚的故事</p>
+        <p className="text-text-primary font-display text-xl">今晚，给宝宝读点什么？</p>
+        <p className="text-text-muted text-sm tracking-wide">点击下方按钮，开始今晚的故事</p>
       </div>
     </div>
   )
@@ -137,7 +137,7 @@ export function ContentCard({ mode, state, content, error }: Props) {
   const slideAnim = useSlideAnimation(mode, state)
 
   return (
-    <div className="flex-1 overflow-y-auto px-5 py-3" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <div className="flex-1 overflow-y-auto overflow-x-hidden px-5 py-3" style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* 不用 key={mode}，避免重新挂载；用 CSS 动画实现平滑切换 */}
       <div className={`max-w-lg mx-auto ${slideAnim}`}>
         {state === 'idle' && <EmptyState />}

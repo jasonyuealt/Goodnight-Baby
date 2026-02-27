@@ -26,7 +26,7 @@ export function Header() {
           fill="currentColor"
         />
       </div>
-      <h1 className="font-serif text-2xl font-semibold tracking-widest text-text-primary">
+      <h1 className="font-display text-3xl tracking-widest text-text-primary">
         晚安宝宝
       </h1>
       {/* 日期问候语 */}

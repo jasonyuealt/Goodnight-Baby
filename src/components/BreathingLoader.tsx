@@ -32,7 +32,7 @@ export function BreathingLoader() {
             style={{ animationDelay: '0.6s' }}
           />
         </div>
-        <p className="text-text-muted text-sm tracking-wider">{message}</p>
+        <p className="text-text-muted text-sm font-display tracking-wider">{message}</p>
       </div>
     </div>
   )

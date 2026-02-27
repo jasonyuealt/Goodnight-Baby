@@ -31,8 +31,9 @@
   --color-text-muted: #A89585;
 
   /* 字体 */
+  --font-display: "ZCOOL KuaiLe", "Quicksand", cursive;
   --font-serif: "Noto Serif SC", Georgia, serif;
-  --font-sans: "Nunito", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  --font-sans: "Quicksand", "Noto Sans SC", system-ui, -apple-system, sans-serif;
 }
 
 /* 全局样式 */
@@ -73,12 +74,12 @@ body {
 
 /* 内容左右滑入动画 */
 @keyframes slide-from-right {
-  from { opacity: 0.5; transform: translateX(24px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { transform: translateX(20px); opacity: 0.92; }
+  to { transform: translateX(0); opacity: 1; }
 }
 @keyframes slide-from-left {
-  from { opacity: 0.5; transform: translateX(-24px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { transform: translateX(-20px); opacity: 0.92; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes fade-in-slow {

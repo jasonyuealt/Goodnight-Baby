@@ -53,7 +53,7 @@ export function ModeSelector({ activeMode, onModeChange, disabled }: Props) {
                 <Icon className={`w-5 h-5 transition-colors duration-300 ${
                   isActive ? 'text-peach-400' : 'text-text-muted'
                 }`} />
-                <span className={`text-xs font-semibold transition-colors duration-300 ${
+                <span className={`text-xs font-bold tracking-wide transition-colors duration-300 ${
                   isActive ? 'text-peach-500' : 'text-text-muted'
                 }`}>
                   {mode.label}
