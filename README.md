@@ -32,7 +32,10 @@
 
 ```
 api/
-└── chat.ts                    # Vercel Edge Function - AI 代理（服务端持有 API Key）
+└── chat.ts                    # Vercel Serverless Function - AI 代理（服务端持有 API Key）
+functions/
+└── api/
+    └── chat.ts                # Cloudflare Pages Function - AI 代理（服务端持有 API Key）
 src/
 ├── App.tsx                    # 应用入口，渐变背景 + 布局
 ├── main.tsx                   # React 挂载
@@ -41,9 +44,13 @@ src/
 ├── config/
 │   └── prompts.ts             # AI 提示词、模式配置、随机变量
 ├── services/
-│   └── ai.ts                  # AI 接口调用（原生 fetch + SSE 流式解析）
+│   └── ai.ts                  # AI 接口调用（原生 fetch + SSE 流式解析 + Qwen3 think 标签过滤）
 ├── hooks/
-│   └── useGenerate.ts         # 生成逻辑 hook（per-mode 缓存）
+│   ├── useGenerate.ts         # 生成逻辑 hook（per-mode 缓存）
+│   └── useSwipe.ts            # 滑动手势 hook
+├── contexts/
+│   ├── ThemeContext.tsx        # 主题管理
+│   └── FontSizeContext.tsx     # 字号管理
 └── components/
     ├── Header.tsx             # 顶部标题 + 月亮星星 + 日期问候
     ├── ModeSelector.tsx       # 三标签选择器 + 滑动指示器
@@ -51,7 +58,10 @@ src/
     ├── GenerateButton.tsx     # 底部生成/换一篇按钮
     ├── BreathingLoader.tsx    # 加载状态（多色呼吸圆 + 随机文案）
     ├── ReadingTip.tsx         # 朗读建议提示
-    └── BackgroundDecor.tsx    # 背景装饰浮动元素
+    ├── BackgroundDecor.tsx    # 背景装饰浮动元素
+    ├── ThemeToggle.tsx        # 主题切换按钮
+    ├── FontSizeControl.tsx    # 字号调节控件
+    └── ShareButton.tsx        # 分享功能
 ```
 
 ## 技术栈
@@ -60,20 +70,20 @@ src/
 - **Tailwind CSS 4**（Vite 插件模式）
 - **Vite 7**
 - **Lucide React**（图标库）
-- **Vercel Edge Function**（API 代理层，保护 API Key）
 - **Cerebras Proxy API**（OpenAI 兼容，原生 fetch 调用）
+- 支持 **Vercel Serverless Function** 和 **Cloudflare Pages Function** 两种部署方式
 
 ## 开发
 
 ```bash
 # 安装依赖
-bun install
+npm install
 
 # 启动开发服务器
-bun run dev
+npm run dev
 
 # 构建
-bun run build
+npm run build
 ```
 
 ## 环境变量
@@ -87,8 +97,21 @@ CEREBRAS_API_KEY=your_api_key_here
 
 ## 部署
 
-项目使用 Vercel 部署：
+### 方式一：Cloudflare Pages（推荐，国内可直接访问）
 
-- **前端静态资源** → Vercel CDN
-- **`/api/chat`** → Vercel Edge Function（代理 AI 请求，API Key 在服务端）
-- 在 Vercel 后台设置 `CEREBRAS_BASE_URL` 和 `CEREBRAS_API_KEY` 环境变量
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/) → Workers & Pages → Create → Pages → Connect to Git
+2. 选择 GitHub 仓库，配置构建设置：
+   - **Framework preset**: None
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+3. 在 Settings → Environment variables 中添加：
+   - `CEREBRAS_BASE_URL` = `https://cerebras-proxy.brain.loocaa.com:1443/v1`
+   - `CEREBRAS_API_KEY` = 你的 API Key
+4. 部署完成后，`/api/chat` 由 `functions/api/chat.ts` 自动处理
+
+### 方式二：Vercel
+
+1. 在 [Vercel](https://vercel.com/) 导入 GitHub 仓库
+2. 在 Settings → Environment Variables 中添加 `CEREBRAS_BASE_URL` 和 `CEREBRAS_API_KEY`
+3. 部署完成后，`/api/chat` 由 `api/chat.ts` Serverless Function 处理
+4. 注意：Vercel 域名在国内需要 VPN 访问

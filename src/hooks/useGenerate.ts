@@ -65,6 +65,11 @@ export function useGenerate() {
         [mode]: { ...prev[mode], state: 'complete' },
       }))
       streamingModeRef.current = null
+
+      // 生成完成，轻微震动反馈
+      if (navigator.vibrate) {
+        navigator.vibrate(50)
+      }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         return

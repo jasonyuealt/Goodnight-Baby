@@ -1,5 +1,7 @@
 export type ContentMode = 'philosophy' | 'story' | 'chat'
 
+export const MODE_ORDER: ContentMode[] = ['philosophy', 'story', 'chat']
+
 export type GenerationState = 'idle' | 'loading' | 'streaming' | 'complete' | 'error'
 
 /** 每个模式的生成状态缓存 */

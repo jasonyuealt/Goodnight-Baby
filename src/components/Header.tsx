@@ -1,18 +1,26 @@
 import { Moon, Star } from 'lucide-react'
+import { ThemeToggle } from './ThemeToggle'
 
-/** 获取日期问候语 */
+/** 获取日期问候语 - 根据时间和星期个性化 */
 function getGreeting(): string {
   const d = new Date()
   const month = d.getMonth() + 1
   const day = d.getDate()
+  const hour = d.getHours()
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
   const weekday = weekdays[d.getDay()]
-  return `${month}月${day}日 ${weekday}的夜晚`
+
+  const adj = hour >= 21 ? '宁静的' : hour >= 18 ? '美好的' : '温馨的'
+  return `${month}月${day}日 ${adj}${weekday}夜晚`
 }
 
 export function Header() {
   return (
-    <header className="flex flex-col items-center pt-safe-top px-6 pt-6 pb-2">
+    <header className="relative flex flex-col items-center pt-safe-top px-6 pt-6 pb-2">
+      {/* 主题切换按钮 - 右上角 */}
+      <div className="absolute top-6 right-5 pt-safe-top">
+        <ThemeToggle />
+      </div>
       {/* 月亮 + 星星图标组合 */}
       <div className="relative mb-2">
         <Moon className="w-8 h-8 text-peach-400 animate-float" />
@@ -26,7 +34,7 @@ export function Header() {
           fill="currentColor"
         />
       </div>
-      <h1 className="font-serif text-2xl font-semibold tracking-widest text-text-primary">
+      <h1 className="font-display text-3xl tracking-widest text-text-primary">
         晚安宝宝
       </h1>
       {/* 日期问候语 */}
