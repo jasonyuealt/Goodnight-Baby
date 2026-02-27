@@ -14,7 +14,7 @@
 
 ### 核心功能
 
-- **AI 流式生成** — 调用 OpenAI 兼容接口（Cerebras 代理），实时流式输出内容（`src/services/ai.ts`）
+- **AI 流式生成** — 通过服务端代理调用 OpenAI 兼容接口，API Key 不暴露给客户端（`api/chat.ts` + `src/services/ai.ts`）
 - **每次内容不同** — 每次生成时随机组合日期、书目/主角/话题等变量，确保内容不重复（`src/config/prompts.ts`）
 - **标签内容缓存** — 切换标签不清空已生成的内容，仅重新生成时才重置（`src/hooks/useGenerate.ts`）
 - **标签滑动切换** — 标签栏滑动指示器 + 内容区水平方向感知滑入动画（`src/components/ModeSelector.tsx` / `ContentCard.tsx`）
@@ -31,6 +31,8 @@
 ## 项目结构
 
 ```
+api/
+└── chat.ts                    # Vercel Edge Function - AI 代理（服务端持有 API Key）
 src/
 ├── App.tsx                    # 应用入口，渐变背景 + 布局
 ├── main.tsx                   # React 挂载
@@ -58,6 +60,7 @@ src/
 - **Tailwind CSS 4**（Vite 插件模式）
 - **Vite 7**
 - **Lucide React**（图标库）
+- **Vercel Edge Function**（API 代理层，保护 API Key）
 - **Cerebras Proxy API**（OpenAI 兼容，原生 fetch 调用）
 
 ## 开发
@@ -75,9 +78,17 @@ bun run build
 
 ## 环境变量
 
-创建 `.env` 文件：
+创建 `.env` 文件（不带 `VITE_` 前缀，仅服务端使用，不会暴露给客户端）：
 
 ```env
-VITE_CEREBRAS_BASE_URL=https://cerebras-proxy.brain.loocaa.com:1443/v1
-VITE_CEREBRAS_API_KEY=your_api_key_here
+CEREBRAS_BASE_URL=https://cerebras-proxy.brain.loocaa.com:1443/v1
+CEREBRAS_API_KEY=your_api_key_here
 ```
+
+## 部署
+
+项目使用 Vercel 部署：
+
+- **前端静态资源** → Vercel CDN
+- **`/api/chat`** → Vercel Edge Function（代理 AI 请求，API Key 在服务端）
+- 在 Vercel 后台设置 `CEREBRAS_BASE_URL` 和 `CEREBRAS_API_KEY` 环境变量

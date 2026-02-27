@@ -1,21 +1,18 @@
 import { SYSTEM_PROMPTS, getUserPrompt, TEMPERATURES, MODEL } from '../config/prompts'
 import type { ContentMode } from '../types'
 
-const BASE_URL = import.meta.env.VITE_CEREBRAS_BASE_URL
-const API_KEY = import.meta.env.VITE_CEREBRAS_API_KEY
-
 /**
- * 使用原生 fetch 调用 OpenAI 兼容接口（避免 SDK 添加额外请求头导致 CORS 问题）
+ * 通过 /api/chat 代理调用 AI 接口
+ * API Key 不在前端，由服务端（Vercel Edge Function / Vite 代理）注入
  */
 export async function* generateContent(
   mode: ContentMode,
   signal: AbortSignal,
 ): AsyncGenerator<string> {
-  const response = await fetch(`${BASE_URL}/chat/completions`, {
+  const response = await fetch('/api/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_KEY}`,
     },
     body: JSON.stringify({
       model: MODEL,
