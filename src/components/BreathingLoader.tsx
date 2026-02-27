@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 
 const LOADING_MESSAGES = [
   '月亮正在写信...',
@@ -10,15 +10,14 @@ const LOADING_MESSAGES = [
 ]
 
 export function BreathingLoader() {
-  // 每次加载时随机选一条童趣文案
-  const message = useMemo(
+  // 每次挂载时随机选一条童趣文案（initializer 仅执行一次）
+  const [message] = useState(
     () => LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)],
-    [],
   )
 
   return (
     // 毛玻璃卡片包裹加载状态
-    <div className="bg-white/40 backdrop-blur-md rounded-3xl border border-white/50 p-6 animate-fade-in">
+    <div className="bg-glass-bg-light backdrop-blur-md rounded-3xl border border-glass-border-light p-6 animate-fade-in">
       <div className="flex flex-col items-center justify-center gap-6 py-12">
         {/* 多色同心圆呼吸动效：peach + lilac + rose */}
         <div className="relative w-16 h-16">

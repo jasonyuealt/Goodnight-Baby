@@ -30,16 +30,67 @@
   --color-text-secondary: #7A6552;
   --color-text-muted: #A89585;
 
+  /* 毛玻璃语义化 token */
+  --color-glass-bg: rgba(255, 255, 255, 0.5);
+  --color-glass-bg-light: rgba(255, 255, 255, 0.35);
+  --color-glass-bg-heavy: rgba(255, 255, 255, 0.7);
+  --color-glass-border: rgba(255, 255, 255, 0.6);
+  --color-glass-border-light: rgba(255, 255, 255, 0.5);
+
   /* 字体 */
   --font-display: "ZCOOL KuaiLe", "Quicksand", cursive;
   --font-serif: "Noto Serif SC", Georgia, serif;
   --font-sans: "Quicksand", "Noto Sans SC", system-ui, -apple-system, sans-serif;
 }
 
+/* === 暗色模式 token 覆盖 === */
+.dark {
+  /* 背景系 - 深蓝夜空 */
+  --color-cream-50: #0f172a;
+  --color-cream-100: #1e293b;
+  --color-cream-200: #334155;
+  --color-cream-300: #475569;
+
+  /* 蜜桃色 → 暖金色 */
+  --color-peach-100: #422006;
+  --color-peach-200: #78350f;
+  --color-peach-300: #b45309;
+  --color-peach-400: #d97706;
+  --color-peach-500: #f59e0b;
+
+  /* 薰衣草紫 → 深紫 */
+  --color-lilac-100: #1e1b2e;
+  --color-lilac-200: #312e54;
+  --color-lilac-300: #7c6fa0;
+  --color-lilac-400: #a78bfa;
+
+  /* 粉色 → 深玫瑰 */
+  --color-rose-100: #1c1017;
+  --color-rose-200: #4a1d34;
+  --color-rose-300: #9d4e78;
+
+  /* 文本色 - 暖奶油色 */
+  --color-text-primary: #fef3c7;
+  --color-text-secondary: #d6c8a6;
+  --color-text-muted: #a89070;
+
+  /* 毛玻璃 - 暗色版 */
+  --color-glass-bg: rgba(30, 41, 59, 0.6);
+  --color-glass-bg-light: rgba(30, 41, 59, 0.4);
+  --color-glass-bg-heavy: rgba(30, 41, 59, 0.8);
+  --color-glass-border: rgba(71, 85, 105, 0.4);
+  --color-glass-border-light: rgba(71, 85, 105, 0.3);
+}
+
 /* 全局样式 */
 html {
   background-color: #FFF8F0;
   color: #4A3728;
+}
+
+html.dark {
+  background-color: #0f172a;
+  color: #fef3c7;
 }
 
 body {
@@ -59,6 +110,9 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #FFDDC0;
   border-radius: 2px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
 }
 
 /* 动画 */
@@ -92,10 +146,14 @@ body {
   50% { opacity: 0; }
 }
 
-/* 柔和呼吸光效 - 周期放慢到 5s，阴影强度降低 */
+/* 柔和呼吸光效 */
 @keyframes glow-soft {
   0%, 100% { box-shadow: 0 4px 16px rgba(244, 149, 106, 0.15); }
   50% { box-shadow: 0 4px 24px rgba(244, 149, 106, 0.28); }
+}
+@keyframes glow-soft-dark {
+  0%, 100% { box-shadow: 0 4px 16px rgba(217, 119, 6, 0.15); }
+  50% { box-shadow: 0 4px 24px rgba(217, 119, 6, 0.3); }
 }
 
 @keyframes float {
@@ -163,6 +221,11 @@ body {
 
 @utility animate-twinkle {
   animation: twinkle 3s ease-in-out infinite;
+}
+
+/* 暗色模式下呼吸光效使用暖金色 */
+.dark .animate-glow-soft {
+  animation-name: glow-soft-dark;
 }
 
 /* prefers-reduced-motion */

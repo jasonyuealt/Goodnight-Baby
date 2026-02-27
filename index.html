@@ -15,6 +15,18 @@
     <title>晚安宝宝 - AI 胎教助手</title>
   </head>
   <body>
+    <script>
+      // FOUC 防闪：在 React 挂载前根据偏好设置 .dark 类
+      (function(){
+        var p = localStorage.getItem('theme-preference');
+        // 有明确偏好则直接使用，否则根据系统偏好和时间判断
+        var dark = p === 'dark' || (!p && (
+          window.matchMedia('(prefers-color-scheme: dark)').matches ||
+          new Date().getHours() >= 18 || new Date().getHours() < 6
+        ));
+        if (dark) document.documentElement.classList.add('dark');
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

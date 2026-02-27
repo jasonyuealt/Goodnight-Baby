@@ -21,11 +21,11 @@ export function ModeSelector({ activeMode, onModeChange, disabled }: Props) {
   return (
     <div className="mx-5 my-3">
       {/* 毛玻璃容器 */}
-      <nav className="relative bg-white/35 backdrop-blur-md rounded-3xl p-1.5 border border-white/50 shadow-sm">
+      <nav className="relative bg-glass-bg-light backdrop-blur-md rounded-3xl p-1.5 border border-glass-border-light shadow-sm">
         {/* 滑动指示器 - 跟随选中标签平滑移动 */}
         <div className="absolute inset-y-1.5 left-1.5 right-1.5 pointer-events-none">
           <div
-            className="h-full rounded-[20px] bg-white/70 backdrop-blur-sm shadow-md border border-white/80 transition-transform duration-300 ease-out"
+            className="h-full rounded-[20px] bg-glass-bg-heavy backdrop-blur-sm shadow-md border border-glass-border transition-transform duration-300 ease-out"
             style={{
               width: `${100 / 3}%`,
               transform: `translateX(${activeIndex * 100}%)`,
