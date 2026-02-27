@@ -21,7 +21,7 @@ const MODE_ORDER: ContentMode[] = ['philosophy', 'story', 'chat']
 function useSlideAnimation(mode: ContentMode, state: GenerationState) {
   const prevModeRef = useRef(mode)
   const prevStateRef = useRef(state)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [animClass, setAnimClass] = useState('')
 
   useEffect(() => {
