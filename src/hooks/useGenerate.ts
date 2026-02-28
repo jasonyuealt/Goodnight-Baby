@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { generateContent } from '../services/ai'
-import type { ContentMode } from '../types'
+import type { ContentMode, UserSettings } from '../types'
 import { ModeState } from '../types'
 
 /** 每个模式独立缓存内容，切换标签不清空，仅重新生成时重置 */
@@ -14,7 +14,7 @@ export function useGenerate() {
   // 记录当前正在流式生成的模式
   const streamingModeRef = useRef<ContentMode | null>(null)
 
-  const generate = useCallback(async (mode: ContentMode) => {
+  const generate = useCallback(async (mode: ContentMode, settings: UserSettings) => {
     // 中止之前的流式请求
     if (abortRef.current) {
       abortRef.current.abort()
@@ -47,7 +47,7 @@ export function useGenerate() {
     }))
 
     try {
-      const stream = generateContent(mode, abortRef.current.signal)
+      const stream = generateContent(mode, settings, abortRef.current.signal)
       setCache(prev => ({
         ...prev,
         [mode]: { ...prev[mode], state: 'streaming' },

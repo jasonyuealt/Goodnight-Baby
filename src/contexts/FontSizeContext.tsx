@@ -61,3 +61,16 @@ export function useFontSize() {
   if (!ctx) throw new Error('useFontSize must be used within FontSizeProvider')
   return ctx
 }
+
+/** 局部覆盖字号（用于历史面板等场景，不影响全局设置） */
+export function FontSizeOverride({ size, children }: { size: number; children: React.ReactNode }) {
+  const value = useMemo(() => ({
+    fontSize: size,
+    increase: () => {},
+    decrease: () => {},
+    canIncrease: false,
+    canDecrease: false,
+  }), [size])
+
+  return <FontSizeContext value={value}>{children}</FontSizeContext>
+}

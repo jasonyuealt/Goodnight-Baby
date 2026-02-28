@@ -141,6 +141,21 @@ body {
   to { opacity: 1; }
 }
 
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 @keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -177,6 +192,18 @@ body {
 @keyframes twinkle {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
   50% { opacity: 0.7; transform: scale(1); }
+}
+
+@utility animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+@utility animate-slide-down {
+  animation: slide-down 0.25s ease-in forwards;
+}
+
+@utility animate-fade-out {
+  animation: fade-out 0.25s ease-in forwards;
 }
 
 @utility animate-breathe {
@@ -221,6 +248,18 @@ body {
 
 @utility animate-twinkle {
   animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.35); }
+  50% { transform: scale(0.9); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@utility animate-bounce-in {
+  animation: bounce-in 0.5s ease-out;
 }
 
 /* 暗色模式下呼吸光效使用暖金色 */

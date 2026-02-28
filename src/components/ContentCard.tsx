@@ -4,7 +4,10 @@ import { ReadingTip } from './ReadingTip'
 import { FontSizeControl } from './FontSizeControl'
 import { ShareButton } from './ShareButton'
 import { useFontSize } from '../contexts/FontSizeContext'
-import { Moon, Star, CloudMoon, Sparkles, Music, RefreshCw } from 'lucide-react'
+import { useSettings } from '../contexts/SettingsContext'
+import { getSectionLabel } from '../config/prompts'
+import { Moon, Star, CloudMoon, Sparkles, Music } from 'lucide-react'
+import { getPregnancyWeeks } from '../utils/pregnancy'
 import { MODE_ORDER } from '../types'
 import type { ContentMode, GenerationState } from '../types'
 
@@ -13,7 +16,8 @@ interface Props {
   state: GenerationState
   content: string
   error: string | null
-  onRegenerate?: () => void
+  daysSinceLastActive?: number
+  streakDays?: number
 }
 
 /**
@@ -53,29 +57,38 @@ function useSlideAnimation(mode: ContentMode, state: GenerationState) {
   return animClass
 }
 
-/* 模式个性化空状态配置 */
-const EMPTY_CONFIG: Record<ContentMode, { Icon: React.ComponentType<{ className?: string }>; title: string; subtitle: string }> = {
-  philosophy: {
-    Icon: Sparkles,
-    title: '古人的智慧，正在为宝宝准备...',
-    subtitle: '点击下方按钮，开启今晚的哲学之旅',
-  },
-  story: {
-    Icon: CloudMoon,
-    title: '温柔的故事，等待被唤醒...',
-    subtitle: '点击下方按钮，开始今晚的故事',
-  },
-  rhyme: {
-    Icon: Music,
-    title: '一首童谣，等着念给宝宝听...',
-    subtitle: '点击下方按钮，生成今晚的童谣',
-  },
+/* 模式个性化空状态配置 — 根据宝宝小名动态生成 */
+function getEmptyConfig(babyName: string): Record<ContentMode, { Icon: React.ComponentType<{ className?: string }>; title: string; subtitle: string }> {
+  return {
+    philosophy: {
+      Icon: Sparkles,
+      title: '今晚听听古人怎么说？',
+      subtitle: `点一下，给${babyName}开始今晚的时光`,
+    },
+    story: {
+      Icon: CloudMoon,
+      title: `月亮升起来了，给${babyName}讲个故事吧`,
+      subtitle: '点一下，开始今晚的时光',
+    },
+    rhyme: {
+      Icon: Music,
+      title: `今晚念首什么给${babyName}听呢？`,
+      subtitle: '点一下，开始今晚的时光',
+    },
+  }
 }
 
 /* 空状态 - 根据模式展示不同图标和文案 */
-function EmptyState({ mode }: { mode: ContentMode }) {
-  const config = EMPTY_CONFIG[mode]
-  const Icon = config.Icon
+function EmptyState({ mode, daysSinceLastActive }: { mode: ContentMode; daysSinceLastActive?: number }) {
+  const { settings } = useSettings()
+  const babyName = settings.babyNickname || '宝宝'
+
+  // 断裂提示：曾经活跃但已离开 2 天以上
+  const isStreakBroken = daysSinceLastActive != null && daysSinceLastActive >= 2
+  const title = isStreakBroken ? `好久不见，${babyName}想你了` : getEmptyConfig(babyName)[mode].title
+  const subtitle = isStreakBroken ? '点一下，重新开始今晚的时光' : getEmptyConfig(babyName)[mode].subtitle
+  const Icon = isStreakBroken ? Moon : getEmptyConfig(babyName)[mode].Icon
+
   return (
     <div className="flex flex-col items-center justify-center gap-6 py-12">
       <div className="relative w-24 h-24 flex items-center justify-center">
@@ -97,17 +110,23 @@ function EmptyState({ mode }: { mode: ContentMode }) {
         />
       </div>
       <div className="text-center space-y-2">
-        <p className="text-text-primary font-display text-xl">{config.title}</p>
-        <p className="text-text-muted text-sm tracking-wide">{config.subtitle}</p>
+        <p className="text-text-primary font-display text-xl">{title}</p>
+        <p className="text-text-muted text-sm tracking-wide">{subtitle}</p>
       </div>
     </div>
   )
 }
 
-/* 哲学模式内容 - 区分原文和爸爸说 */
-function PhilosophyContent({ text }: { text: string }) {
+/* 哲学模式内容 - 区分原文和角色说 */
+export function PhilosophyContent({ text }: { text: string }) {
   const { fontSize } = useFontSize()
-  const parts = text.split(/(?=【原文】|【爸爸说】)/)
+  const { settings } = useSettings()
+  const label = getSectionLabel(settings.role)
+  const roleDisplay = settings.role === 'dad' ? '爸爸说' : '妈妈说'
+
+  // 动态匹配 【爸爸说】或【妈妈说】
+  const splitRegex = new RegExp(`(?=【原文】|${label.replace(/[[\]]/g, '\\$&')})`)
+  const parts = text.split(splitRegex)
   return (
     <>
       {parts.map((part, i) => {
@@ -127,15 +146,15 @@ function PhilosophyContent({ text }: { text: string }) {
             </div>
           )
         }
-        if (part.startsWith('【爸爸说】')) {
+        if (part.startsWith(label)) {
           return (
             <div key={i} className="mt-8">
               <div className="flex items-center gap-1.5 text-lilac-400 text-xs tracking-widest mb-3 font-semibold">
                 <Star className="w-3 h-3" fill="currentColor" />
-                <span>爸爸说</span>
+                <span>{roleDisplay}</span>
               </div>
               <p className="text-text-secondary leading-loose" style={{ fontSize: fontSize - 2 }}>
-                {part.replace('【爸爸说】', '').trim()}
+                {part.replace(label, '').trim()}
               </p>
             </div>
           )
@@ -150,7 +169,7 @@ function PhilosophyContent({ text }: { text: string }) {
 }
 
 /* 故事模式内容 - 按段落分行 */
-function PlainContent({ text }: { text: string }) {
+export function PlainContent({ text }: { text: string }) {
   const { fontSize } = useFontSize()
   const paragraphs = text.split(/\n\n+/).filter(Boolean)
   return (
@@ -169,7 +188,7 @@ function PlainContent({ text }: { text: string }) {
 }
 
 /* 童谣模式内容 - 居中逐行展示，诗歌排版 */
-function RhymeContent({ text }: { text: string }) {
+export function RhymeContent({ text }: { text: string }) {
   const { fontSize } = useFontSize()
   const lines = text.split(/\n/).filter(Boolean)
   return (
@@ -187,8 +206,25 @@ function RhymeContent({ text }: { text: string }) {
   )
 }
 
+/* 孕周适配标签 — 生成完成后展示，让用户感知内容是为自己孕期定制的 */
+function PregnancyBadge() {
+  const { settings } = useSettings()
+  const weeks = getPregnancyWeeks(settings.dueDate)
+  const babyName = settings.babyNickname || '宝宝'
+  if (weeks == null) return null
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 mt-6 animate-fade-in">
+      <Sparkles className="w-3 h-3 text-peach-400/70" />
+      <span className="text-peach-400/80 text-xs tracking-wide">
+        为孕 {weeks} 周的{babyName}特别准备
+      </span>
+    </div>
+  )
+}
+
 export const ContentCard = forwardRef<HTMLDivElement, Props>(
-  function ContentCard({ mode, state, content, error, onRegenerate }, ref) {
+  function ContentCard({ mode, state, content, error, daysSinceLastActive, streakDays }, ref) {
     const hasContent = (state === 'streaming' || state === 'complete') && content.length > 0
     // 切换标签时的水平滑入动画（idle↔idle 时跳过）
     const slideAnim = useSlideAnimation(mode, state)
@@ -197,27 +233,16 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
       <div ref={ref} className="flex-1 overflow-y-auto overflow-x-hidden px-5 py-3" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* 不用 key={mode}，避免重新挂载；用 CSS 动画实现平滑切换 */}
         <div className={`max-w-lg mx-auto ${slideAnim}`}>
-          {state === 'idle' && <EmptyState mode={mode} />}
+          {state === 'idle' && <EmptyState mode={mode} daysSinceLastActive={daysSinceLastActive} />}
 
           {(state === 'loading' || (state === 'streaming' && !content)) && <BreathingLoader />}
 
           {/* 流式输出和完成状态 - 毛玻璃卡片容器 */}
           {hasContent && (
             <div className="relative bg-glass-bg backdrop-blur-md rounded-3xl shadow-sm border border-glass-border p-6 animate-fade-in">
-              {/* 顶部工具栏：字号调节 + 分享 + 刷新 */}
+              {/* 顶部工具栏：字号调节 */}
               <div className="flex items-center justify-end gap-2 mb-2">
                 <FontSizeControl />
-                {state === 'complete' && <ShareButton mode={mode} content={content} />}
-                {state === 'complete' && onRegenerate && (
-                  <button
-                    onClick={onRegenerate}
-                    className="p-1.5 rounded-xl bg-glass-bg-light backdrop-blur-sm border border-glass-border-light
-                               text-text-muted hover:text-peach-400 transition-colors duration-200 cursor-pointer"
-                    aria-label="换一篇"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
 
               {mode === 'philosophy' ? (
@@ -236,7 +261,15 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
                 </div>
               )}
 
+              {state === 'complete' && <PregnancyBadge />}
               {state === 'complete' && <ReadingTip mode={mode} />}
+
+              {/* 底部分享入口 */}
+              {state === 'complete' && (
+                <div className="flex justify-center mt-6 animate-fade-in">
+                  <ShareButton mode={mode} content={content} streakDays={streakDays} />
+                </div>
+              )}
             </div>
           )}
 
@@ -244,8 +277,9 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
           {state === 'error' && (
             <div className="bg-glass-bg backdrop-blur-md rounded-3xl border border-glass-border p-6">
               <div className="flex flex-col items-center gap-4 py-8 animate-fade-in">
-                <p className="text-text-muted text-center">{error || '出了点小问题'}</p>
-                <p className="text-text-muted/60 text-sm">请点击下方按钮重试</p>
+                <CloudMoon className="w-10 h-10 text-text-muted/40" />
+                <p className="text-text-muted text-center">{error || '哎呀，月亮躲进云里了...'}</p>
+                <p className="text-text-muted/60 text-sm">再试一次吧</p>
               </div>
             </div>
           )}

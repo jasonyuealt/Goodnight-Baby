@@ -1,5 +1,5 @@
-import { SYSTEM_PROMPTS, getUserPrompt, TEMPERATURES, MODEL } from '../config/prompts'
-import type { ContentMode } from '../types'
+import { getSystemPrompt, getUserPrompt, TEMPERATURES, MODEL } from '../config/prompts'
+import type { ContentMode, UserSettings } from '../types'
 
 /**
  * 检查 text 末尾是否匹配 tag 的不完整前缀
@@ -20,6 +20,7 @@ function partialTagSuffixLen(text: string, tag: string): number {
  */
 export async function* generateContent(
   mode: ContentMode,
+  settings: UserSettings,
   signal: AbortSignal,
 ): AsyncGenerator<string> {
   const response = await fetch('/api/chat', {
@@ -30,8 +31,8 @@ export async function* generateContent(
     body: JSON.stringify({
       model: MODEL,
       messages: [
-        { role: 'system', content: SYSTEM_PROMPTS[mode] },
-        { role: 'user', content: getUserPrompt(mode) },
+        { role: 'system', content: getSystemPrompt(mode, settings) },
+        { role: 'user', content: getUserPrompt(mode, settings) },
       ],
       temperature: TEMPERATURES[mode],
       stream: true,
