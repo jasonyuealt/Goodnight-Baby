@@ -1,6 +1,6 @@
-export type ContentMode = 'philosophy' | 'story' | 'chat'
+export type ContentMode = 'philosophy' | 'story' | 'rhyme'
 
-export const MODE_ORDER: ContentMode[] = ['philosophy', 'story', 'chat']
+export const MODE_ORDER: ContentMode[] = ['philosophy', 'story', 'rhyme']
 
 export type GenerationState = 'idle' | 'loading' | 'streaming' | 'complete' | 'error'
 

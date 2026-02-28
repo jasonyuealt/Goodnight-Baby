@@ -4,7 +4,7 @@ import { ReadingTip } from './ReadingTip'
 import { FontSizeControl } from './FontSizeControl'
 import { ShareButton } from './ShareButton'
 import { useFontSize } from '../contexts/FontSizeContext'
-import { Moon, Star, CloudMoon, Sparkles, MessageCircle, RefreshCw } from 'lucide-react'
+import { Moon, Star, CloudMoon, Sparkles, Music, RefreshCw } from 'lucide-react'
 import { MODE_ORDER } from '../types'
 import type { ContentMode, GenerationState } from '../types'
 
@@ -65,10 +65,10 @@ const EMPTY_CONFIG: Record<ContentMode, { Icon: React.ComponentType<{ className?
     title: '温柔的故事，等待被唤醒...',
     subtitle: '点击下方按钮，开始今晚的故事',
   },
-  chat: {
-    Icon: MessageCircle,
-    title: '爸爸有好多话想对宝宝说...',
-    subtitle: '点击下方按钮，倾诉今晚的心声',
+  rhyme: {
+    Icon: Music,
+    title: '一首童谣，等着念给宝宝听...',
+    subtitle: '点击下方按钮，生成今晚的童谣',
   },
 }
 
@@ -149,7 +149,7 @@ function PhilosophyContent({ text }: { text: string }) {
   )
 }
 
-/* 通用文本内容（故事/碎碎念模式）- 按段落分行 */
+/* 故事模式内容 - 按段落分行 */
 function PlainContent({ text }: { text: string }) {
   const { fontSize } = useFontSize()
   const paragraphs = text.split(/\n\n+/).filter(Boolean)
@@ -168,9 +168,28 @@ function PlainContent({ text }: { text: string }) {
   )
 }
 
+/* 童谣模式内容 - 居中逐行展示，诗歌排版 */
+function RhymeContent({ text }: { text: string }) {
+  const { fontSize } = useFontSize()
+  const lines = text.split(/\n/).filter(Boolean)
+  return (
+    <div className="text-center py-4">
+      {lines.map((line, i) => (
+        <p
+          key={i}
+          className="font-serif leading-loose text-text-primary"
+          style={{ fontSize: fontSize + 2, marginBottom: '0.6em' }}
+        >
+          {line.trim()}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 export const ContentCard = forwardRef<HTMLDivElement, Props>(
   function ContentCard({ mode, state, content, error, onRegenerate }, ref) {
-    const hasContent = state === 'streaming' || state === 'complete'
+    const hasContent = (state === 'streaming' || state === 'complete') && content.length > 0
     // 切换标签时的水平滑入动画（idle↔idle 时跳过）
     const slideAnim = useSlideAnimation(mode, state)
 
@@ -180,7 +199,7 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
         <div className={`max-w-lg mx-auto ${slideAnim}`}>
           {state === 'idle' && <EmptyState mode={mode} />}
 
-          {state === 'loading' && <BreathingLoader />}
+          {(state === 'loading' || (state === 'streaming' && !content)) && <BreathingLoader />}
 
           {/* 流式输出和完成状态 - 毛玻璃卡片容器 */}
           {hasContent && (
@@ -203,6 +222,8 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
 
               {mode === 'philosophy' ? (
                 <PhilosophyContent text={content} />
+              ) : mode === 'rhyme' ? (
+                <RhymeContent text={content} />
               ) : (
                 <PlainContent text={content} />
               )}

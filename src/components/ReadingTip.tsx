@@ -2,9 +2,9 @@ import { Volume2 } from 'lucide-react'
 import type { ContentMode } from '../types'
 
 const READING_TIPS: Record<ContentMode, string> = {
-  philosophy: '建议缓缓诵读，让古人的智慧沉淀在声音里，宝宝在感受爸爸的从容。',
+  philosophy: '建议缓缓诵读原文，"爸爸说"的部分用最自然的语气读出来，就像真的在跟宝宝聊天。',
   story: '建议语速放慢一倍，用温柔的声音讲述，让宝宝跟着故事慢慢入睡。',
-  chat: '就像平时跟宝宝聊天一样，自然地读出来，让宝宝感受爸爸真实的温暖。',
+  rhyme: '建议用有节奏感的语调朗读，可以轻轻拍着肚子打节拍，重复念两三遍效果更好哦。',
 }
 
 export function ReadingTip({ mode }: { mode: ContentMode }) {

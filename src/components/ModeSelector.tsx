@@ -1,11 +1,11 @@
-import { Sparkles, BookOpen, MessageCircle } from 'lucide-react'
+import { Sparkles, BookOpen, Music } from 'lucide-react'
 import { MODES } from '../config/prompts'
 import type { ContentMode } from '../types'
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   sparkles: Sparkles,
   'book-open': BookOpen,
-  'message-circle': MessageCircle,
+  music: Music,
 }
 
 interface Props {

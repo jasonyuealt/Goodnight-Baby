@@ -5,7 +5,7 @@ import type { ContentMode } from '../types'
 const MODE_LABELS: Record<ContentMode, string> = {
   philosophy: '哲学修身',
   story: '温柔绘本',
-  chat: '碎碎念',
+  rhyme: '念童谣',
 }
 
 interface Props {
