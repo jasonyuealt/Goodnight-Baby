@@ -8,7 +8,7 @@ export function useGenerate() {
   const [cache, setCache] = useState<Record<ContentMode, ModeState>>({
     philosophy: new ModeState(),
     story: new ModeState(),
-    rhyme: new ModeState(),
+    babyInfo: new ModeState(),
   })
   const abortRef = useRef<AbortController | null>(null)
   // 记录当前正在流式生成的模式

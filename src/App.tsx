@@ -39,7 +39,7 @@ export default function App() {
 
   // 生成完成时自动保存历史 + 标记连续天数
   const prevStatesRef = useRef<Record<ContentMode, string>>({
-    philosophy: 'idle', story: 'idle', rhyme: 'idle',
+    philosophy: 'idle', story: 'idle', babyInfo: 'idle',
   })
   useEffect(() => {
     const prevState = prevStatesRef.current[mode]

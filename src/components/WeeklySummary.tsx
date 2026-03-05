@@ -41,12 +41,12 @@ export function WeeklySummary({ records }: Props) {
   const weekRecords = getLastWeekRecords(records)
   if (weekRecords.length === 0) return null
 
-  const counts: Record<ContentMode, number> = { philosophy: 0, story: 0, rhyme: 0 }
+  const counts: Record<ContentMode, number> = { philosophy: 0, story: 0, babyInfo: 0 }
   for (const r of weekRecords) counts[r.mode]++
 
   const parts: string[] = []
   if (counts.story > 0) parts.push(`${counts.story} 个故事`)
-  if (counts.rhyme > 0) parts.push(`${counts.rhyme} 首童谣`)
+  if (counts.babyInfo > 0) parts.push(`${counts.babyInfo} 篇百科`)
   if (counts.philosophy > 0) parts.push(`${counts.philosophy} 篇经典`)
   if (parts.length === 0) return null
 

@@ -13,8 +13,8 @@ export function getModes(role: ReaderRole): ModeConfig[] {
   const r = ROLE_LABELS[role]
   return [
     { id: 'philosophy', label: '念经典', icon: 'sparkles', description: `古人的智慧，${r}的大白话` },
-    { id: 'story', label: '温柔绘本', icon: 'book-open', description: '暖暖的、软软的睡前故事' },
-    { id: 'rhyme', label: '念童谣', icon: 'music', description: '朗朗上口的童谣，念给宝宝听' },
+    { id: 'story', label: '讲故事', icon: 'book-open', description: '暖暖的、软软的睡前小故事' },
+    { id: 'babyInfo', label: '宝宝小百科', icon: 'baby', description: '今天的宝宝长什么样？' },
   ]
 }
 
@@ -65,18 +65,19 @@ export function getSystemPrompt(mode: ContentMode, settings: UserSettings): stri
 3. 【氛围】：温暖、安全、舒适。不要冒险紧张的情节。
 4. 【结尾】：故事要自然地收尾，结尾温暖就好。不需要每次都以入睡结束，也不需要固定的结尾句子。${nicknameSuffix}`
 
-    case 'rhyme':
-      return `你是一位童谣创作者。请为${baby}创作一首原创童谣，给${r}念给肚子里的${baby}听。
+    case 'babyInfo':
+      return `你是一位温暖又专业的孕期科普作者，正在帮${r}了解肚子里${baby}的发育情况。
+
+输出结构（严格按此顺序）：
+1. 【${baby}的样子】：用一两句话描述${baby}现在大约多大，用一个常见水果或食物做比喻（如"像一颗葡萄"、"像一个芒果"）。
+2. 【这周的变化】：用3-4个要点，介绍${baby}这一周新发育的器官或能力。内容必须基于医学常识，不要杜撰。用温暖的口语表达，避免冰冷的医学术语。
+3. 【${r}可以做的事】：给1-2个简单的胎教互动建议，比如聊天、抚摸、听音乐等。要具体、可操作。
 
 要求：
-1. 【篇幅】：4-8行，简短好记。
-2. 【韵律】：必须押韵，读起来朗朗上口。多用叠词（摇啊摇、亮晶晶）和拟声词（沙沙沙、咕噜噜）。
-3. 【风格】：类似"摇啊摇，摇到外婆桥"、"小白兔白又白"这种经典童谣——简单、重复、好念。
-4. 【内容】：围绕哄睡、月亮星星、小动物、亲情等温馨主题。不要说教。
-5. 【结构】：内容要层层递进，最后一两句要有明确的结束感，让人觉得念完了。结尾不一定是入睡，可以是温馨的画面、一句呼唤、一个拥抱等。
-6. 【语言】：这是最重要的要求。每一句话都必须语法通顺、语序自然。绝对不能为了凑韵脚而写出倒装句或不通顺的句子。如果押韵和通顺冲突，宁可不押韵也要保证句子自然。
-7. 【原创】：必须原创，不能直接引用已有童谣，但可以借鉴风格。
-8. 【格式】：只输出童谣正文，每行一句。不加标题和说明。${nicknameSuffix}`
+1. 【准确性】：发育信息必须符合该孕周的医学常识。不确定的内容不要写。
+2. 【语气】：温暖、亲切，像${r}在翻一本写给自己的小册子。不要用"您"，用"你"。
+3. 【篇幅】：200-300字。
+4. 【格式】：只输出上述三部分的纯文字内容，不要输出排版指令或 Markdown 符号。${nicknameSuffix}`
   }
 }
 
@@ -115,18 +116,6 @@ const STORY_SOUNDS = [
   '听着妈妈哼的摇篮曲', '听着小溪叮咚叮咚的声音',
 ]
 
-const RHYME_THEMES = [
-  '月亮和星星', '小动物们', '下雨天',
-  '春天来了', '数数歌', '妈妈的怀抱',
-  '小手和小脚', '太阳和月亮', '风儿吹',
-  '小花开了', '爸爸的大手', '小鸟飞',
-]
-const RHYME_STYLES = [
-  '欢快活泼、适合拍手念', '轻柔舒缓、适合哄睡',
-  '有趣好玩、带拟声词', '温馨甜蜜、关于亲情',
-  '有动作的互动童谣', '带数数或重复的趣味童谣',
-]
-
 /** 根据预产期计算孕周上下文，用于 prompt 注入 */
 function getPregnancyContext(dueDate: string): string {
   if (!dueDate) return ''
@@ -157,15 +146,15 @@ export function getUserPrompt(mode: ContentMode, settings: UserSettings): string
       return `今天是${date}。请从${pickRandom(PHILOSOPHY_SOURCES)}中，选一段关于"${pickRandom(PHILOSOPHY_THEMES)}"的内容，为${baby}讲解。请选一段你之前没有选过的内容。${pregCtx}`
     case 'story':
       return `今天是${date}。请创作一个全新的睡前故事，主角是${pickRandom(STORY_CHARACTERS)}，它正在${pickRandom(STORY_SCENES)}，${pickRandom(STORY_SOUNDS)}。请发挥创意，不要重复之前的故事。${pregCtx}`
-    case 'rhyme':
-      return `今天是${date}。请创作一首关于"${pickRandom(RHYME_THEMES)}"的童谣，风格要求：${pickRandom(RHYME_STYLES)}。请发挥创意，每次都要创作全新的内容。${pregCtx}`
+    case 'babyInfo':
+      return `今天是${date}。请介绍${baby}这一周的发育情况。${pregCtx || '\n（提示：用户未设置预产期，请按孕中期约20周的情况来介绍，并在开头温馨提醒设置预产期可以获得更精准的内容。）'}`
   }
 }
 
 export const TEMPERATURES: Record<ContentMode, number> = {
   philosophy: 0.8,
   story: 0.9,
-  rhyme: 0.85,
+  babyInfo: 0.7,
 }
 
 export const MODEL = 'qwen-3-235b-a22b-instruct-2507'

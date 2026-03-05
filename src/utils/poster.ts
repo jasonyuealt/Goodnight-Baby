@@ -2,8 +2,8 @@ import type { ContentMode } from '../types'
 
 export const MODE_LABELS: Record<ContentMode, string> = {
   philosophy: '念经典',
-  story: '温柔绘本',
-  rhyme: '念童谣',
+  story: '讲故事',
+  babyInfo: '宝宝小百科',
 }
 
 /* Canvas 海报配置 */

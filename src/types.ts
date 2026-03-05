@@ -1,9 +1,9 @@
-export type ContentMode = 'philosophy' | 'story' | 'rhyme'
+export type ContentMode = 'philosophy' | 'story' | 'babyInfo'
 
-export const MODE_ORDER: ContentMode[] = ['philosophy', 'story', 'rhyme']
+export const MODE_ORDER: ContentMode[] = ['philosophy', 'story', 'babyInfo']
 
 /** 主界面展示的主模式（念经典降级到"更多"） */
-export const PRIMARY_MODES: ContentMode[] = ['story', 'rhyme']
+export const PRIMARY_MODES: ContentMode[] = ['story', 'babyInfo']
 
 export type GenerationState = 'idle' | 'loading' | 'streaming' | 'complete' | 'error'
 

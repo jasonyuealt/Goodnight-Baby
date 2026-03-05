@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
-import { X, Trash2, Download, Sparkles, BookOpen, Music, ChevronDown, ChevronUp } from 'lucide-react'
-import { PhilosophyContent, PlainContent, RhymeContent } from './ContentCard'
+import { X, Trash2, Download, Sparkles, BookOpen, Baby, ChevronDown, ChevronUp } from 'lucide-react'
+import { PhilosophyContent, PlainContent } from './ContentCard'
 import { FontSizeOverride } from '../contexts/FontSizeContext'
 import type { ContentMode, HistoryRecord } from '../types'
 
@@ -13,13 +13,13 @@ interface Props {
 const MODE_ICONS: Record<ContentMode, React.ComponentType<{ className?: string }>> = {
   philosophy: Sparkles,
   story: BookOpen,
-  rhyme: Music,
+  babyInfo: Baby,
 }
 
 const MODE_LABELS: Record<ContentMode, string> = {
   philosophy: '念经典',
-  story: '温柔绘本',
-  rhyme: '念童谣',
+  story: '讲故事',
+  babyInfo: '宝宝小百科',
 }
 
 function formatDate(iso: string): string {
@@ -49,8 +49,6 @@ function RecordItem({ record }: { record: HistoryRecord }) {
               <FontSizeOverride size={18}>
                 {record.mode === 'philosophy' ? (
                   <PhilosophyContent text={record.content} />
-                ) : record.mode === 'rhyme' ? (
-                  <RhymeContent text={record.content} />
                 ) : (
                   <PlainContent text={record.content} />
                 )}

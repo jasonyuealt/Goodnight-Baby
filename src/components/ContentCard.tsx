@@ -6,7 +6,7 @@ import { ShareButton } from './ShareButton'
 import { useFontSize } from '../contexts/FontSizeContext'
 import { useSettings } from '../contexts/SettingsContext'
 import { getSectionLabel } from '../config/prompts'
-import { Moon, Star, CloudMoon, Sparkles, Music } from 'lucide-react'
+import { Moon, Star, CloudMoon, Sparkles, Baby } from 'lucide-react'
 import { getPregnancyWeeks } from '../utils/pregnancy'
 import { MODE_ORDER } from '../types'
 import type { ContentMode, GenerationState } from '../types'
@@ -70,10 +70,10 @@ function getEmptyConfig(babyName: string): Record<ContentMode, { Icon: React.Com
       title: `月亮升起来了，给${babyName}讲个故事吧`,
       subtitle: '点一下，开始今晚的时光',
     },
-    rhyme: {
-      Icon: Music,
-      title: `今晚念首什么给${babyName}听呢？`,
-      subtitle: '点一下，开始今晚的时光',
+    babyInfo: {
+      Icon: Baby,
+      title: `看看${babyName}今天长什么样？`,
+      subtitle: '点一下，了解这周的变化',
     },
   }
 }
@@ -187,25 +187,6 @@ export function PlainContent({ text }: { text: string }) {
   )
 }
 
-/* 童谣模式内容 - 居中逐行展示，诗歌排版 */
-export function RhymeContent({ text }: { text: string }) {
-  const { fontSize } = useFontSize()
-  const lines = text.split(/\n/).filter(Boolean)
-  return (
-    <div className="text-center py-4">
-      {lines.map((line, i) => (
-        <p
-          key={i}
-          className="font-serif leading-loose text-text-primary"
-          style={{ fontSize: fontSize + 2, marginBottom: '0.6em' }}
-        >
-          {line.trim()}
-        </p>
-      ))}
-    </div>
-  )
-}
-
 /* 孕周适配标签 — 生成完成后展示，让用户感知内容是为自己孕期定制的 */
 function PregnancyBadge() {
   const { settings } = useSettings()
@@ -247,8 +228,6 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
 
               {mode === 'philosophy' ? (
                 <PhilosophyContent text={content} />
-              ) : mode === 'rhyme' ? (
-                <RhymeContent text={content} />
               ) : (
                 <PlainContent text={content} />
               )}

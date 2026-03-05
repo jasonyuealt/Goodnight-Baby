@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
     server: {
+      port: 5174,
       proxy: {
         // 开发环境代理：/api/chat → Cerebras API（自动注入 API Key）
         '/api/chat': {
