@@ -3,6 +3,7 @@ import type { ContentMode } from '../types'
 export const MODE_LABELS: Record<ContentMode, string> = {
   philosophy: '念经典',
   story: '讲故事',
+  rhyme: '念儿歌',
   babyInfo: '宝宝小百科',
 }
 

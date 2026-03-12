@@ -12,8 +12,9 @@ export function getSectionLabel(role: ReaderRole): string {
 export function getModes(role: ReaderRole): ModeConfig[] {
   const r = ROLE_LABELS[role]
   return [
+    { id: 'story', label: '讲故事', icon: 'book-open', description: '有温度的睡前故事' },
+    { id: 'rhyme', label: '念儿歌', icon: 'music', description: '经典儿歌，念给宝宝听' },
     { id: 'philosophy', label: '念经典', icon: 'sparkles', description: `古人的智慧，${r}的大白话` },
-    { id: 'story', label: '讲故事', icon: 'book-open', description: '暖暖的、软软的睡前小故事' },
     { id: 'babyInfo', label: '宝宝小百科', icon: 'baby', description: '今天的宝宝长什么样？' },
   ]
 }
@@ -57,13 +58,16 @@ export function getSystemPrompt(mode: ContentMode, settings: UserSettings): stri
 5. 【格式要求】：只输出【原文】和${label}两部分的纯文字内容，不要输出任何格式说明或排版指令。${nicknameSuffix}`
 
     case 'story':
-      return `你是一位温柔的睡前故事创作者。请生成一段200字左右的睡前小故事，给未出生的${baby}听。
+      return `你是一位温柔而有创意的睡前故事创作者。请为未出生的${baby}创作一个睡前故事。
 
 要求：
-1. 【故事情节】：要讲一个完整的小故事，有开头、经过和温馨的结尾。不要只是描写场景，要有事情发生。
-2. 【语言风格】：用温暖简单的语言，多用叠词（暖暖的、软软的、轻轻地），句子要短，节奏要慢，适合慢速朗读。
-3. 【氛围】：温暖、安全、舒适。不要冒险紧张的情节。
-4. 【结尾】：故事要自然地收尾，结尾温暖就好。不需要每次都以入睡结束，也不需要固定的结尾句子。${nicknameSuffix}`
+1. 【格式】：第一行只写故事标题，不加书名号或其他符号。然后空一行，开始正文。
+2. 【篇幅】：正文400-500字，分3-4个自然段落，每段有清晰的场景或情节推进。
+3. 【故事结构】：要有完整的起承转合——一个小小的起因、过程中的变化或挑战（温和的）、温馨的结局。不要只是描写场景，要有事情真正发生。
+4. 【语言风格】：适合朗读出声。句子要短，节奏要慢。多用叠词（暖暖的、软软的、轻轻地）和拟声词（沙沙沙、叮咚叮咚）。对话可以多一些，让角色有声音。
+5. 【氛围】：温暖、安全，但不无聊。可以有小小的好奇、小小的冒险、小小的惊喜，只是结局永远是安心的。
+6. 【结尾】：故事要自然收尾。不需要每次都以入睡结束，可以是拥抱、微笑、期待明天等各种温馨结尾。
+7. 【多样性】：每次的故事风格都要有变化。不要陷入相同的叙事套路。${nicknameSuffix}`
 
     case 'babyInfo':
       return `你是一位温暖又专业的孕期科普作者，正在帮${r}了解肚子里${baby}的发育情况。
@@ -78,6 +82,9 @@ export function getSystemPrompt(mode: ContentMode, settings: UserSettings): stri
 2. 【语气】：温暖、亲切，像${r}在翻一本写给自己的小册子。不要用"您"，用"你"。
 3. 【篇幅】：200-300字。
 4. 【格式】：只输出上述三部分的纯文字内容，不要输出排版指令或 Markdown 符号。${nicknameSuffix}`
+
+    case 'rhyme':
+      return '' // 儿歌模式为本地数据，不调用 AI
   }
 }
 
@@ -103,17 +110,36 @@ const STORY_CHARACTERS = [
   '小兔宝宝', '小熊宝宝', '小猫咪', '小鸭子',
   '小刺猬', '小企鹅', '小考拉', '小水獭',
   '小松鼠', '小柴犬', '胖胖的小仓鼠', '毛茸茸的小绵羊',
+  '小狐狸', '小海豚', '小乌龟', '小瓢虫',
 ]
+
+/** 故事类型 — 控制整体风格和走向 */
+const STORY_TYPES = [
+  '温馨冒险：主角出发去做一件小小的事，过程中遇到一点小波折，最后温暖地完成了',
+  '自然探索：主角在自然中发现了什么神奇的东西（一朵会发光的花、一颗会唱歌的石头），充满好奇和惊喜',
+  '友谊故事：主角和好朋友之间发生了一件暖心的事，可以是帮助、分享或和好',
+  '亲情陪伴：主角和爸爸或妈妈一起做一件温馨的事情，感受到被爱',
+  '奇幻想象：发生了一件不可思议的事（云朵变成棉花糖、星星掉进口袋），充满童真想象力',
+  '日常趣事：一个平凡日子里的小插曲，有趣但温暖，像生活小品',
+  '季节故事：围绕春夏秋冬的季节特色展开，让人感受到时节的美好',
+  '下雨天故事：和雨有关的温馨小故事，雨声、水洼、彩虹、躲雨',
+]
+
+/** 情节元素 — 给故事加一点变化 */
+const STORY_PLOTS = [
+  '在寻找一样丢失的小东西', '想为好朋友准备一份惊喜',
+  '第一次尝试做一件新事情', '发现了一个从没见过的神奇地方',
+  '和一个新朋友相遇了', '在等一个重要的人回来',
+  '想把一样美好的东西分享给别人', '收到了一份意想不到的礼物',
+  '在夜晚看到了很特别的景色', '帮助了一个需要帮忙的小伙伴',
+]
+
 const STORY_SCENES = [
   '被妈妈抱在怀里', '钻进暖暖的被窝', '靠在妈妈身边',
   '窝在树洞里的小毯子上', '趴在妈妈毛茸茸的肚子上',
   '和好朋友在草地上玩', '在小溪边散步', '在花园里找蝴蝶',
   '坐在大树下乘凉', '帮妈妈摘果子', '追着萤火虫跑',
-]
-const STORY_SOUNDS = [
-  '听着妈妈的心跳声', '听着窗外淅淅沥沥的小雨',
-  '听着风轻轻吹过树叶的沙沙声', '听着远处蛐蛐的歌声',
-  '听着妈妈哼的摇篮曲', '听着小溪叮咚叮咚的声音',
+  '在雪地里踩脚印', '在月光下的池塘边', '在暖暖的厨房里',
 ]
 
 /** 根据预产期计算孕周上下文，用于 prompt 注入 */
@@ -145,15 +171,23 @@ export function getUserPrompt(mode: ContentMode, settings: UserSettings): string
     case 'philosophy':
       return `今天是${date}。请从${pickRandom(PHILOSOPHY_SOURCES)}中，选一段关于"${pickRandom(PHILOSOPHY_THEMES)}"的内容，为${baby}讲解。请选一段你之前没有选过的内容。${pregCtx}`
     case 'story':
-      return `今天是${date}。请创作一个全新的睡前故事，主角是${pickRandom(STORY_CHARACTERS)}，它正在${pickRandom(STORY_SCENES)}，${pickRandom(STORY_SOUNDS)}。请发挥创意，不要重复之前的故事。${pregCtx}`
+      return `今天是${date}。请创作一个全新的睡前故事。
+主角：${pickRandom(STORY_CHARACTERS)}
+故事类型：${pickRandom(STORY_TYPES)}
+情节线索：${pickRandom(STORY_PLOTS)}
+开场场景：${pickRandom(STORY_SCENES)}
+请发挥创意，写出和以往不一样的故事。${pregCtx}`
     case 'babyInfo':
       return `今天是${date}。请介绍${baby}这一周的发育情况。${pregCtx || '\n（提示：用户未设置预产期，请按孕中期约20周的情况来介绍，并在开头温馨提醒设置预产期可以获得更精准的内容。）'}`
+    case 'rhyme':
+      return '' // 儿歌模式为本地数据，不调用 AI
   }
 }
 
 export const TEMPERATURES: Record<ContentMode, number> = {
   philosophy: 0.8,
   story: 0.9,
+  rhyme: 0,     // 儿歌为本地数据，不调 AI
   babyInfo: 0.7,
 }
 

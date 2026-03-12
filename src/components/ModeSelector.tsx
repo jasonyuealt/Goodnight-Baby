@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Sparkles, BookOpen, Baby } from 'lucide-react'
+import { Sparkles, BookOpen, Baby, Music } from 'lucide-react'
 import { getPrimaryModes, getSecondaryModes, getModes } from '../config/prompts'
 import { useSettings } from '../contexts/SettingsContext'
 import { PRIMARY_MODES } from '../types'
@@ -9,6 +9,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   sparkles: Sparkles,
   'book-open': BookOpen,
   baby: Baby,
+  music: Music,
 }
 
 interface Props {

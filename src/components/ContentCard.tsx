@@ -6,7 +6,7 @@ import { ShareButton } from './ShareButton'
 import { useFontSize } from '../contexts/FontSizeContext'
 import { useSettings } from '../contexts/SettingsContext'
 import { getSectionLabel } from '../config/prompts'
-import { Moon, Star, CloudMoon, Sparkles, Baby } from 'lucide-react'
+import { Moon, Star, CloudMoon, Sparkles, Baby, Music } from 'lucide-react'
 import { getPregnancyWeeks } from '../utils/pregnancy'
 import { MODE_ORDER } from '../types'
 import type { ContentMode, GenerationState } from '../types'
@@ -69,6 +69,11 @@ function getEmptyConfig(babyName: string): Record<ContentMode, { Icon: React.Com
       Icon: CloudMoon,
       title: `月亮升起来了，给${babyName}讲个故事吧`,
       subtitle: '点一下，开始今晚的时光',
+    },
+    rhyme: {
+      Icon: Music,
+      title: `念首儿歌给${babyName}听吧`,
+      subtitle: '点一下，随机来一首经典儿歌',
     },
     babyInfo: {
       Icon: Baby,
@@ -168,7 +173,40 @@ export function PhilosophyContent({ text }: { text: string }) {
   )
 }
 
-/* 故事模式内容 - 按段落分行 */
+/* 故事模式内容 - 第一行为标题，其余按段落分行 */
+export function StoryContent({ text }: { text: string }) {
+  const { fontSize } = useFontSize()
+  const paragraphs = text.split(/\n\n+/).filter(Boolean)
+
+  // 第一个段落作为标题（如果只有一段还在流式中，就当普通文本显示）
+  const hasTitle = paragraphs.length > 1
+  const title = hasTitle ? paragraphs[0].trim() : null
+  const body = hasTitle ? paragraphs.slice(1) : paragraphs
+
+  return (
+    <div>
+      {title && (
+        <h2
+          className="font-display text-text-primary text-center mb-6 pb-4 border-b border-cream-300/40"
+          style={{ fontSize: fontSize + 2 }}
+        >
+          {title}
+        </h2>
+      )}
+      {body.map((para, i) => (
+        <p
+          key={i}
+          className="font-serif leading-loose text-text-primary"
+          style={{ fontSize, textIndent: '2em', marginBottom: '1.2em' }}
+        >
+          {para.trim()}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+/* 通用纯文本内容 - 按段落分行（babyInfo 等） */
 export function PlainContent({ text }: { text: string }) {
   const { fontSize } = useFontSize()
   const paragraphs = text.split(/\n\n+/).filter(Boolean)
@@ -183,6 +221,38 @@ export function PlainContent({ text }: { text: string }) {
           {para.trim()}
         </p>
       ))}
+    </div>
+  )
+}
+
+/* 儿歌模式内容 - 标题 + 每行一句居中排版 */
+export function RhymeContent({ text }: { text: string }) {
+  const { fontSize } = useFontSize()
+  const parts = text.split(/\n\n+/).filter(Boolean)
+  const title = parts[0]?.trim()
+  const lines = (parts.slice(1).join('\n') || '').split('\n').filter(l => l.trim())
+
+  return (
+    <div className="text-center">
+      {title && (
+        <h2
+          className="font-display text-text-primary mb-6 pb-4 border-b border-cream-300/40"
+          style={{ fontSize: fontSize + 2 }}
+        >
+          {title}
+        </h2>
+      )}
+      <div className="space-y-2">
+        {lines.map((line, i) => (
+          <p
+            key={i}
+            className="font-serif text-text-primary leading-relaxed"
+            style={{ fontSize }}
+          >
+            {line.trim()}
+          </p>
+        ))}
+      </div>
     </div>
   )
 }
@@ -228,6 +298,10 @@ export const ContentCard = forwardRef<HTMLDivElement, Props>(
 
               {mode === 'philosophy' ? (
                 <PhilosophyContent text={content} />
+              ) : mode === 'story' ? (
+                <StoryContent text={content} />
+              ) : mode === 'rhyme' ? (
+                <RhymeContent text={content} />
               ) : (
                 <PlainContent text={content} />
               )}

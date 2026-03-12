@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { generateContent } from '../services/ai'
+import { pickRandomRhyme } from '../config/rhymes'
 import type { ContentMode, UserSettings } from '../types'
 import { ModeState } from '../types'
 
@@ -8,6 +9,7 @@ export function useGenerate() {
   const [cache, setCache] = useState<Record<ContentMode, ModeState>>({
     philosophy: new ModeState(),
     story: new ModeState(),
+    rhyme: new ModeState(),
     babyInfo: new ModeState(),
   })
   const abortRef = useRef<AbortController | null>(null)
@@ -39,6 +41,19 @@ export function useGenerate() {
 
     streamingModeRef.current = mode
     abortRef.current = new AbortController()
+
+    // 儿歌模式：本地数据，不调 AI
+    if (mode === 'rhyme') {
+      const rhyme = pickRandomRhyme()
+      const content = `${rhyme.title}\n\n${rhyme.content}`
+      setCache(prev => ({
+        ...prev,
+        [mode]: { state: 'complete', content, error: null },
+      }))
+      streamingModeRef.current = null
+      if (navigator.vibrate) navigator.vibrate(50)
+      return
+    }
 
     // 仅重置当前模式
     setCache(prev => ({

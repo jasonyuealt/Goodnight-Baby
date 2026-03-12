@@ -6,6 +6,7 @@ function getReadingTips(roleLabel: string): Record<ContentMode, string> {
   return {
     philosophy: `建议缓缓诵读原文，"${roleLabel}说"的部分用最自然的语气读出来，就像真的在跟宝宝聊天。`,
     story: '建议语速放慢一倍，用温柔的声音讲述，让宝宝跟着故事慢慢入睡。',
+    rhyme: '慢慢地念，可以反复多念几遍。宝宝喜欢有韵律的声音哦。',
     babyInfo: '可以一边读一边轻轻摸着肚子，告诉宝宝你在了解它的变化哦。',
   }
 }
